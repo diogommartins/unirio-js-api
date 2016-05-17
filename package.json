@@ -1,0 +1,24 @@
+{
+  "name": "@unirio/api",
+  "version": "1.0.0",
+  "description": "Javascript client for the RESTful API provided by the Federal University of Rio de Janeiro (UNIRIO) at https://sistemas.unirio.br/api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diogommartins/unirio-js-api.git"
+  },
+  "keywords": [
+    "unirio",
+    "api",
+    "rest"
+  ],
+  "author": "Diogo Magalhães Martins <magalhaesmartins@icloud.com> (http://www.unirio.br/dtic)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/diogommartins/unirio-js-api/issues"
+  },
+  "homepage": "https://github.com/diogommartins/unirio-js-api#readme"
+}
