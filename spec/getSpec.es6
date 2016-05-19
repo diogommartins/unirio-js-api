@@ -39,7 +39,7 @@ describe("Testing GET requests", function(){
 
 describe("Testint Procedure requestes", function(){
     it("responds to procedure calls", function(done){
-        api.call_procedure(UNAUTHORIZED_PROCEDURE, {}, undefined, function(data, error){
+        api.call_procedure(UNAUTHORIZED_PROCEDURE, [], undefined, function(data, error){
             expect(error).toBe(401);
             done();
         });
