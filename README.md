@@ -5,6 +5,18 @@
 NPM package that provides an api client for the API provided by the Universidade Federal do Estado do Rio de Janeiro (UNIRIO)
 Please visit http://sistemas.unirio.br/api for further information.
 
+## Installing
+
+```
+npm install unirio-api
+```
+
+## Testing
+
+```
+npm test
+```
+
 ## Basic Usage
 
 ``` javascript
@@ -49,3 +61,7 @@ callProcedure(name, data, fields=[], callback)
 * @param {Object[]} data - Array of objects to be serialized
 * @param {string[]} [fields] - Array with de desired return fields. Empty list or None will return all
 * @param {API~getCallback} callback - A callback to be performed after the response/error
+
+## To do
+
+* Implement the other methods
