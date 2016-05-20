@@ -1,0 +1,51 @@
+# unirio-api
+
+[![NPM](https://nodei.co/npm/unirio-api.png)](https://nodei.co/npm/unirio-api/)
+
+NPM package that provides an api client for the API provided by the Universidade Federal do Estado do Rio de Janeiro (UNIRIO)
+Please visit http://sistemas.unirio.br/api for further information.
+
+## Basic Usage
+
+``` javascript
+var Unirio = require('unirio-api');
+
+var KEY = "1a404993f3175002c90738a4e46b1d12c06ddcc42f01ffbbaecf3285b98f34dc3ac0b9db9e07fdfbe0587c6ef14e5c92";
+
+var api = new Unirio.API(KEY, Unirio.APIServers.PRODUCTION);
+
+api.get('UNIT_TEST', undefined, undefined, function(data, error){
+    if (typeof error === 'undefined'){
+        // Do something with `data`
+    }
+});
+```
+
+## The Methods
+
+The public module interface for interacting with the API methods is as follows:
+
+``` javascript
+get(path, params={}, fields=[], callback)
+```
+* @param {string} path - The API endpoint to use for the request, for example 'ALUNOS'
+* @param {Object} [params] - The parameters for the request. A value of None sends the automatic API parameters
+* @param {string[]} [fields] - The return fields for the request. A value of None is equal do requesting ALL the fields
+* @param {API~getCallback} callback - A callback to be performed after the response/error
+
+``` javascript
+post(path, params={}, callback)
+```
+
+* @param {string} path: The API endpoint to use for the request, for example 'ALUNOS'
+* @param {Object} params: The parameters for the request. Should contain all the not-null attributes.
+* @param {API~postCallback} callback - A callback to be performed after the response/error
+
+``` javascript
+callProcedure(name, data, fields=[], callback)
+```
+
+* @param {string} name - Procedure name to be called
+* @param {Object[]} data - List of objects to be serialized
+* @param {string[]} [fields] - list with de desired return fields. Empty list or None will return all
+* @param {API~getCallback} callback - A callback to be performed after the response/error

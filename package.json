@@ -1,6 +1,6 @@
 {
   "name": "unirio-api",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Javascript client for the RESTful API provided by the Federal University of Rio de Janeiro (UNIRIO) at https://sistemas.unirio.br/api",
   "main": "lib/api.js",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/diogommartins/unirio-js-api#readme",
   "dependencies": {
-    "request": "^2.72.0",
+    "restler": "^3.4.0",
     "url": "^0.11.0",
     "babel-polyfill": "^6.8.0"
   },

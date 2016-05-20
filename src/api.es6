@@ -5,7 +5,7 @@ var url = require("url");
 
 export const Unirio = {};
 
-Unirio.APIServers = {
+export const APIServers = Unirio.APIServers = {
     PRODUCTION: {
         host: "sistemas.unirio.br",
         path: "/api"
@@ -24,7 +24,7 @@ Unirio.APIServers = {
     }
 };
 
-class API{
+export class API{
     /**
      *
      * @param {string} key - A valid APIKey that will be used for future requests
@@ -55,8 +55,8 @@ class API{
     /**
      * @param {string} path - The API endpoint to use for the request, for example 'ALUNOS'
      * @param {Object} [params] - The parameters for the request. A value of None sends the automatic API parameters
-     * @param {undefined|string[]} fields - The return fields for the request. A value of None is equal do requesting ALL the fields
-     * @param {API~getCallback} [callback]
+     * @param {string[]} [fields] - The return fields for the request. A value of None is equal do requesting ALL the fields
+     * @param {API~getCallback} callback
      * @return {*}
      */
     get(path, params={}, fields=[], callback){
@@ -80,9 +80,9 @@ class API{
 
     /**
      *
-     * @param path
-     * @param params
-     * @param {API~postCallback}callback
+     * @param {string} path - The API endpoint to use for the request, for example 'ALUNOS'
+     * @param {Object} params - The parameters for the request. Should contain all the not-null attributes.
+     * @param {API~postCallback}callback - A callback to be performed after the response/error
      */
     post(path, params={}, callback){
         const formatedURL = url.format({
@@ -101,10 +101,10 @@ class API{
 
     /**
      *
-     * @param {string} name
-     * @param {Object[]} data
-     * @param {string[]} [fields]
-     * @param {API~getCallback} callback
+     * @param {string} name - Procedure name to be called
+     * @param {Object[]} data - List of objects to be serialized
+     * @param {string[]} [fields] - list with de desired return fields. Empty list or None will return all
+     * @param {API~getCallback} callback - A callback to be performed after the response/error
      */
     callProcedure(name, data, fields=[], callback){
         const formatedURL = url.format({

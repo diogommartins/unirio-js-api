@@ -75,19 +75,19 @@ describe("Testing POST requests", function(){
     });
 
     it("returns status CREATED with blob field", function(done){
-        console.log('Not implemented');
+        console.warn('Not implemented');
         done();
     });
 
     it("returns status CREATED with clob field", function(done){
-        console.log('Not implemented');
+        console.warn('Not implemented');
         done();
     });
 
     it("returns BAD_REQUEST with permission and empty parameters", function(done){
         api.post(consts.VALID_ENDPOINT, undefined, function(newId, error){
-            // expect(error).toBe(400);
-            // expect(newId).toBeUndefined();
+            expect(error).toBe(400);
+            expect(newId).toBeUndefined();
             done();
         });
     });
