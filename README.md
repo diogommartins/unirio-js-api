@@ -46,6 +46,6 @@ callProcedure(name, data, fields=[], callback)
 ```
 
 * @param {string} name - Procedure name to be called
-* @param {Object[]} data - List of objects to be serialized
-* @param {string[]} [fields] - list with de desired return fields. Empty list or None will return all
+* @param {Object[]} data - Array of objects to be serialized
+* @param {string[]} [fields] - Array with de desired return fields. Empty list or None will return all
 * @param {API~getCallback} callback - A callback to be performed after the response/error
