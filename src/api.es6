@@ -1,6 +1,6 @@
 import "babel-polyfill";
 
-var request = require("request");
+var rest = require("restler");
 var url = require("url");
 
 export const Unirio = {};
@@ -39,7 +39,7 @@ class API{
 
     /**
      *
-     * @typedef {Object} API~APIResultObject
+     * @typedef {Object} API~ResultObject
      * @property {Object[]} content
      * @property {number[]} subset
      * @property {string[]} fields
@@ -47,8 +47,8 @@ class API{
 
     /**
      * Callback function to be called with the response
-     * @callback API~requestCallback
-     * @param {API~APIResultObject} [data]
+     * @callback API~getCallback
+     * @param {API~ResultObject} [data]
      * @param {Object} [error]
      */
 
@@ -56,7 +56,7 @@ class API{
      * @param {string} path - The API endpoint to use for the request, for example 'ALUNOS'
      * @param {Object} [params] - The parameters for the request. A value of None sends the automatic API parameters
      * @param {undefined|string[]} fields - The return fields for the request. A value of None is equal do requesting ALL the fields
-     * @param {API~requestCallback} [callback]
+     * @param {API~getCallback} [callback]
      * @return {*}
      */
     get(path, params={}, fields=[], callback){
@@ -67,18 +67,46 @@ class API{
             query: this._parsePayload(params, fields)
         });
 
-        request.get(formatedURL, function(error, response, body){
-            if (typeof callback === 'function') {
-                if (!error && response.statusCode === 200) {
-                    callback(JSON.parse(body));
-                }
-                else {
-                    callback(undefined, response.statusCode);
-                }
-            }
-        });
+        rest.get(formatedURL)
+            .on('success', (data, response) => callback(data))
+            .on('fail', (data, response) => callback(undefined, response.statusCode));
     }
-    call_procedure(name, data, fields=[], callback){
+
+    /**
+     * @callback API~postCallback
+     * @param {number} [newId]
+     * @param {Object} [error]
+     */
+
+    /**
+     *
+     * @param path
+     * @param params
+     * @param {API~postCallback}callback
+     */
+    post(path, params={}, callback){
+        const formatedURL = url.format({
+            protocol: this._protocol,
+            host: this.server.host,
+            pathname: this.server.path + '/' + path
+        });
+
+        const payload = Object.assign(params, {API_KEY: this._key});
+
+        rest.postJson(formatedURL, payload)
+            .on('success', (data, response) => callback(Number(response.headers.id)))
+            .on('fail', (data, response) => callback(undefined, response.statusCode))
+            .on('error', (error, response) => callback(response, error));
+    }
+
+    /**
+     *
+     * @param {string} name
+     * @param {Object[]} data
+     * @param {string[]} [fields]
+     * @param {API~getCallback} callback
+     */
+    callProcedure(name, data, fields=[], callback){
         const formatedURL = url.format({
             protocol: this._protocol,
             host: this.server.host,
@@ -92,31 +120,25 @@ class API{
             API_KEY: this._key
         };
 
-        request.post({uri:formatedURL, body:params, json:true}, function(error, response, body){
-            if (typeof callback === 'function') {
-                if (!error && (response.statusCode === 201 || response.statusCode === 200)) {
-                    callback(JSON.parse(body));
-                }
-                else{
-                    callback(undefined, response.statusCode);
-                }
-            }
-        });
-        
+        rest.postJson(formatedURL, params)
+            .on('success', (data, response) => callback(data))
+            .on('fail', (data, response) => callback(undefined, response.statusCode))
+            .on('error', (error, response) => callback(response, error));
+
     }
     /**
      *
      * @param {Object} params
-     * @param {string[]} fields
+     * @param {string[]} [fields]
      * @return {Object}
      * @private
      */
     _parsePayload(params, fields){
-        return Object.assign(params, {
-            FIELDS: fields.join(),
-            API_KEY: this._key,
-            FORMAT: 'JSON'
-        })
+        const payload = { API_KEY: this._key, FORMAT: 'JSON'};
+        if (typeof fields !== 'undefined')
+            payload.FIELDS = fields.join();
+
+        return Object.assign(params, payload)
     }
 }
 

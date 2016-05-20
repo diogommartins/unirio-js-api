@@ -6,3 +6,4 @@ export const API_KEY_INVALID = "INVALIDA93f3175002c90738a4e46b1d12c06ddcc42f01ff
 export const VALID_ENDPOINT = "UNIT_TEST";
 export const TEST_ENV = Unirio.APIServers.LOCAL;
 export const UNAUTHORIZED_PROCEDURE = 'FooProcedure';
+export const UNAUTHORIZED_ENDPOINT = 'ALUNOS';
