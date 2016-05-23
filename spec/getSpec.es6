@@ -2,7 +2,7 @@ import {Unirio} from "../lib/api";
 import * as consts from "./config";
 
 
-var api = new Unirio.API(consts.API_KEY_VALID, consts.TEST_ENV);
+var api = new Unirio.API(consts.KEYS.VALID.PRODUCTION, consts.TEST_EjNV);
 
 function randomString(length){
     return Math.random().toString(length).slice(2);
@@ -104,4 +104,43 @@ describe("Testing POST requests", function(){
             done();
         });
     });
+});
+
+describe("Testing PUT requests", function(){
+    var validEntry;
+
+    beforeEach(function(done){
+       api.get(consts.VALID_ENDPOINT, undefined, undefined, function(data, error){
+           expect(error).toBeUndefined();
+           validEntry = data.content[0];
+           done();
+       });
+    });
+
+    afterEach(() => validEntry = undefined);
+
+    it("returns status code OK with permission", function(done){
+        validEntry['PROJNAME'] = randomString(30);
+        api.put(consts.VALID_ENDPOINT, validEntry, function(affectedRows, error){
+
+        });
+    });
+    it("returns status code NOT_FOUND if theres nothing to update", function(done){
+
+    });
+    it("returns BAD_REQUEST if the primary key is missing and endpoint is valid", function(done){
+
+    });
+    it("returns UNPROCESSABLE_ENTITY(422) for invalid parameters types", function(done){
+
+    });
+});
+
+describe("Testing DELETE requests", function(){
+   it("returns status code OK with permission", function(done){
+
+   });
+   it("", function(done){
+
+   });
 });
