@@ -8,7 +8,7 @@ describe("Testing GET requests", function(){
             done();
         });
     });
-    describe("Valid endpoint", function(){
+    describe("with valid endpoint", function(){
         it("returns status code OK with permission ", function(done){
             api.get(consts.VALID_ENDPOINT, undefined, undefined, function(data, error){
                 expect(error).not.toBeDefined();
@@ -24,7 +24,7 @@ describe("Testing GET requests", function(){
             })
         });
     });
-    describe("Invalid endpoint", function(){
+    describe("with invalid endpoint", function(){
         it("returns status code NOT_FOUND with parameters", function(done) {
             const mockParams = {
                 PROJNAME: randomString(20),
@@ -45,4 +45,32 @@ describe("Testing GET requests", function(){
             })
         });
     });
+});
+
+describe("Testing getSingleResult", function(){
+    describe("Valid endpoint", function(){
+        it("without passing parameters, returns an object ", function(done){
+            api.getSingleResult(consts.VALID_ENDPOINT, undefined, undefined, function(data, error){
+                expect(typeof data).toBe('object');
+                expect(error).toBeUndefined();
+                done();
+            });
+        });
+
+        it("passing valid parameters, returns an object", function(done){
+            api.getSingleResult(consts.VALID_ENDPOINT, undefined, undefined, function(doc, error){
+                expect(error).toBeUndefined();
+                const params = {ID_UNIT_TEST: doc.ID_UNIT_TEST};
+
+                api.getSingleResult(consts.VALID_ENDPOINT, params, undefined, function(data, error){
+                    expect(error).toBeUndefined();
+                    expect(doc).toEqual(data);
+                    done();
+                })
+            });
+        });
+
+
+    })
+
 });
