@@ -104,7 +104,7 @@ export class API{
      *
      * @param {string} path - The API endpoint to use for the request, for example 'ALUNOS'
      * @param {Object} params - The parameters for the request. Should contain all the not-null attributes.
-     * @param {API~postCallback}callback - A callback to be performed after the response/error
+     * @param {API~postCallback} callback - A callback to be performed after the response/error
      */
     post(path, params={}, callback){
         const payload = Object.assign(params, {API_KEY: this._key});
