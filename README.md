@@ -2,7 +2,7 @@
 
 [![NPM](https://nodei.co/npm/unirio-api.png)](https://nodei.co/npm/unirio-api/)
 
-NPM package that provides an api client for the API provided by the Universidade Federal do Estado do Rio de Janeiro (UNIRIO)
+NPM package that provides an api client for the RESTful API provided by the Universidade Federal do Estado do Rio de Janeiro (UNIRIO)
 Please visit http://sistemas.unirio.br/api for further information.
 
 ## Installing
@@ -64,4 +64,4 @@ callProcedure(name, data, fields=[], callback)
 
 ## To do
 
-* Implement the other methods
+* Implement the other API methods
