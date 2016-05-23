@@ -1,8 +1,7 @@
 import {Unirio} from "../lib/api";
 import * as consts from "./config";
 
-
-var api = new Unirio.API(consts.KEYS.VALID.PRODUCTION, consts.TEST_EjNV);
+var api = new Unirio.API(consts.KEYS.VALID.DEVELOPMENT, consts.TEST_ENV);
 
 function randomString(length){
     return Math.random().toString(length).slice(2);
@@ -110,37 +109,96 @@ describe("Testing PUT requests", function(){
     var validEntry;
 
     beforeEach(function(done){
-       api.get(consts.VALID_ENDPOINT, undefined, undefined, function(data, error){
-           expect(error).toBeUndefined();
-           validEntry = data.content[0];
-           done();
-       });
+        api.get(consts.VALID_ENDPOINT, undefined, undefined, function(data, error){
+            expect(error).toBeUndefined();
+            validEntry = data.content[0];
+            done();
+        });
     });
 
     afterEach(() => validEntry = undefined);
 
     it("returns status code OK with permission", function(done){
-        validEntry['PROJNAME'] = randomString(30);
-        api.put(consts.VALID_ENDPOINT, validEntry, function(affectedRows, error){
+        const params = {
+            ID_UNIT_TEST: validEntry.ID_UNIT_TEST,
+            PROJNAME: randomString(30)
+        };
 
+        api.put(consts.VALID_ENDPOINT, params, function(affectedRows, error){
+            expect(affectedRows).toBeGreaterThan(0);
+            expect(error).toBeUndefined();
+            done()
         });
     });
-    it("returns status code NOT_FOUND if theres nothing to update", function(done){
-
+    it("returns status code OK and 0 affectedRows if theres nothing to update", function(done){
+        const params = {
+            ID_UNIT_TEST: Number.MAX_SAFE_INTEGER
+        };
+        api.put(consts.VALID_ENDPOINT, params, function(affectedRows, error){
+            expect(affectedRows).toBe(0);
+            expect(error).toBeUndefined();
+            done()
+        });
     });
     it("returns BAD_REQUEST if the primary key is missing and endpoint is valid", function(done){
-
+        const params = {
+            PROJNAME: validEntry.PROJNAME
+        };
+        api.put(consts.VALID_ENDPOINT, params, function(affectedRows, error){
+            expect(affectedRows).toBeUndefined();
+            expect(error).toBe(400);
+            done()
+        });
     });
     it("returns UNPROCESSABLE_ENTITY(422) for invalid parameters types", function(done){
-
+        const params = {
+            ID_UNIT_TEST: randomString(20)
+        };
+        api.put(consts.VALID_ENDPOINT, params, function(affectedRows, error){
+            expect(affectedRows).toBeUndefined();
+            expect(error).toBe(422);
+            done()
+        });
     });
 });
 
 describe("Testing DELETE requests", function(){
-   it("returns status code OK with permission", function(done){
+    
+    it("returns status code OK with permission", function(done){
+        api.get(consts.VALID_ENDPOINT, undefined, undefined, function(data, error){
+            expect(data.content.length).toBeGreaterThan(0);
+            expect(error).toBeUndefined();
 
-   });
-   it("", function(done){
+            const validEntry = data.content[0];
 
-   });
+            api.del(consts.VALID_ENDPOINT, {ID_UNIT_TEST: validEntry.ID_UNIT_TEST}, function(affectedRows, error){
+                expect(affectedRows).toBeGreaterThan(0);
+                expect(error).toBeUndefined();
+                done();
+            });
+
+        })
+    });
+
+    it("returns BAD_REQUEST without primary key", function(done){
+        const params = {
+            PROJNAME: randomString(20)
+        };
+        api.del(consts.VALID_ENDPOINT, params, function(affectedRows, error){
+            expect(affectedRows).toBeUndefined();
+            expect(error).toBe(400);
+            done();
+        })
+    });
+
+    it("returns NO_CONTENT for invalid primary key", function(done){
+        const params = {
+            ID_UNIT_TEST: Number.MAX_SAFE_INTEGER
+        };
+        api.del(consts.VALID_ENDPOINT, params, function(affectedRows, error){
+            expect(affectedRows).toBeUndefined();
+            expect(error).toBe(204);
+            done();
+        })
+    })
 });
