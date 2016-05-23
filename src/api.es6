@@ -60,12 +60,7 @@ export class API{
      * @return {*}
      */
     get(path, params={}, fields=[], callback){
-        const formatedURL = url.format({
-            protocol: this._protocol,
-            host: this.server.host,
-            pathname: this.server.path + '/' + path,  // todo: usar algum modulo com urlPathJoin ou ta bom?
-            query: this._parsePayload(params, fields)
-        });
+        const formatedURL = this._formatURL(path, {query: this._parsePayload(params, fields)});
 
         rest.get(formatedURL)
             .on('success', (data, response) => callback(data))
@@ -85,18 +80,20 @@ export class API{
      * @param {API~postCallback}callback - A callback to be performed after the response/error
      */
     post(path, params={}, callback){
-        const formatedURL = url.format({
-            protocol: this._protocol,
-            host: this.server.host,
-            pathname: this.server.path + '/' + path
-        });
-
         const payload = Object.assign(params, {API_KEY: this._key});
 
-        rest.postJson(formatedURL, payload)
+        rest.postJson(this._formatURL(path), payload)
             .on('success', (data, response) => callback(Number(response.headers.id)))
             .on('fail', (data, response) => callback(undefined, response.statusCode))
             .on('error', (error, response) => callback(response, error));
+    }
+
+    put(path, params, callback) {
+        const payload = Object.assign(params, {API_KEY: this._key});
+
+        rest.putJson(this._formatURL(path), payload)
+            .on('success', (data, response) => callback(Number(response.headers.affectedRows)))
+            .on('fail', (data, response) => callback(undefined, response.statusCode))
     }
 
     /**
@@ -107,12 +104,7 @@ export class API{
      * @param {API~getCallback} callback - A callback to be performed after the response/error
      */
     callProcedure(name, data, fields=[], callback){
-        const formatedURL = url.format({
-            protocol: this._protocol,
-            host: this.server.host,
-            pathname: this.server.path + '/procedure/' + name
-        });
-
+        const path = '/procedure/' + name;
         const params = {
             data: data,
             async: false,
@@ -120,7 +112,7 @@ export class API{
             API_KEY: this._key
         };
 
-        rest.postJson(formatedURL, params)
+        rest.postJson(this._formatURL(path), params)
             .on('success', (data, response) => callback(data))
             .on('fail', (data, response) => callback(undefined, response.statusCode))
             .on('error', (error, response) => callback(response, error));
@@ -139,6 +131,25 @@ export class API{
             payload.FIELDS = fields.join();
 
         return Object.assign(params, payload)
+    }
+
+    /**
+     *
+     * @param path
+     * @param {Object} [options] - Object with aditional params to be passed to url.format
+     * @returns {*}
+     * @private
+     */
+    _formatURL(path, options){
+        const baseURL = {
+            protocol: this._protocol,
+            host: this.server.host,
+            pathname: this.server.path + '/' + path
+        };
+        if (typeof options !== 'undefined')
+            Object.assign(baseURL, options);
+
+        return url.format(baseURL);
     }
 }
 
