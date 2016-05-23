@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/api.es6 | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/diogommartins/unirio-js-api" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/api.es6~API.html">API</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-APIServers">APIServers</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Unirio">Unirio</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-API~ResultObject">API~ResultObject</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/api.es6</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import &quot;babel-polyfill&quot;;
+
+var rest = require(&quot;restler&quot;);
+var url = require(&quot;url&quot;);
+
+rest.delJson = function (url, data, options) {
+    return rest.json(url, data, options, &apos;DELETE&apos;);
+};
+
+export const Unirio = {};
+
+export const APIServers = Unirio.APIServers = {
+    PRODUCTION: {
+        host: &quot;sistemas.unirio.br&quot;,
+        path: &quot;/api&quot;
+    },
+    DEVELOPMENT: {
+        host: &quot;teste.sistemas.unirio.br&quot;,
+        path: &quot;/api&quot;
+    },
+    LOCAL: {
+        host: &quot;localhost:8000&quot;,
+        path: &quot;/api&quot;
+    },
+    PRODUCTION_DEVELOPMENT: {
+        host: &quot;sistemas.unirio.br&quot;,
+        path: &quot;/api_teste&quot;
+    }
+};
+
+export class API{
+    /**
+     *
+     * @param {string} key - A valid APIKey that will be used for future requests
+     * @param {Object} server - An APIServer that identify the host and path to be used as base for the requests
+     * @param {boolean} secure - http or https ?
+     */
+    constructor(key, server=Unirio.APIServers.LOCAL, secure=false){
+        this._key = key;
+        this.server = server;
+        this._protocol = secure ? &apos;https&apos;: &apos;http&apos;;
+    }
+
+    /**
+     *
+     * @typedef {Object} API~ResultObject
+     * @property {Object[]} content
+     * @property {number[]} subset
+     * @property {string[]} fields
+     */
+
+    /**
+     * Callback function to be called with the response
+     * @callback API~getCallback
+     * @param {API~ResultObject} [data]
+     * @param {number} [error]
+     */
+
+    /**
+     * @param {string} path - The API endpoint to use for the request, for example &apos;ALUNOS&apos;
+     * @param {Object} [params] - The parameters for the request. A value of None sends the automatic API parameters
+     * @param {string[]} [fields] - The return fields for the request. A value of None is equal do requesting ALL the fields
+     * @param {API~getCallback} callback
+     */
+    get(path, params={}, fields=[], callback){
+        const formatedURL = this._formatURL(path, {query: this._parsePayload(params, fields)});
+
+        rest.get(formatedURL)
+            .on(&apos;success&apos;, (data, response) =&gt; callback(data))
+            .on(&apos;fail&apos;, (data, response) =&gt; callback(undefined, response.statusCode));
+    }
+
+    /**
+     * Callback function to be called with the response
+     * @callback API~getSingleCallback
+     * @param {Object} [doc]
+     * @param {number} [error]
+     */
+
+    /**
+     * Wrapper to get a single result
+     *
+     * @param {string} path - The API endpoint to use for the request, for example &apos;ALUNOS&apos;
+     * @param {Object} [params] - The parameters for the request. A value of None sends the automatic API parameters
+     * @param {string[]} [fields] - The return fields for the request. A value of None is equal do requesting ALL the fields
+     * @param {API~getSingleCallback} callback
+     */
+    getSingleResult(path, params={}, fields=[], callback){
+        const _params = {LMIN: 0, LMAX: 1};
+        Object.assign(_params, params);
+
+        this.get(path, _params, fields, function(data, error){
+            (typeof error === &apos;undefined&apos;) ? callback(data.content[0]) : callback(undefined, error);
+        });
+    }
+
+    /**
+     * @callback API~postCallback
+     * @param {number} [newId]
+     * @param {Object} [error]
+     */
+
+    /**
+     *
+     * @param {string} path - The API endpoint to use for the request, for example &apos;ALUNOS&apos;
+     * @param {Object} params - The parameters for the request. Should contain all the not-null attributes.
+     * @param {API~postCallback} callback - A callback to be performed after the response/error
+     */
+    post(path, params={}, callback){
+        const payload = Object.assign(params, {API_KEY: this._key});
+
+        rest.postJson(this._formatURL(path), payload)
+            .on(&apos;success&apos;, (data, response) =&gt; callback(Number(response.headers.id)))
+            .on(&apos;fail&apos;, (data, response) =&gt; callback(undefined, response.statusCode))
+            .on(&apos;error&apos;, (error, response) =&gt; callback(response, error));
+    }
+
+    /**
+     * @callback API~changeCallback
+     * @param {number} [afectedRows]
+     * @param {number} [error] - HTTP Status code
+     */
+
+    /**
+     *
+     * @param {string} path - The API endpoint to use for the request, for example &apos;ALUNOS&apos;
+     * @param {Object} params - The parameters for the request. Should contain all the attributes that should be updated as well as the endpoint unique identifier.
+     * @param {API~changeCallback} callback
+     */
+    put(path, params, callback) {
+        const payload = Object.assign(params, {API_KEY: this._key});
+
+        rest.putJson(this._formatURL(path), payload)
+            .on(&apos;success&apos;, (data, response) =&gt; callback(Number(response.headers.affected)) )
+            .on(&apos;fail&apos;, (data, response) =&gt; callback(undefined, response.statusCode))
+    }
+
+    /**
+     *
+     * @param {string} path - The API endpoint to use for the request, for example &apos;ALUNOS&apos;
+     * @param {Object} params - The parameters for the request. Should contain the endpoint unique identifier. e.g.: `{&apos;ID_ALUNO&apos;: 235}`
+     * @param {API~changeCallback} callback
+     */
+    del(path, params, callback){
+        const payload = Object.assign(params, {API_KEY: this._key});
+        
+        rest.delJson(this._formatURL(path), payload)
+            .on(&apos;200&apos;, (data, response) =&gt; callback(Number(response.headers.affected)) )
+            .on(&apos;fail&apos;, (data, response) =&gt; callback(undefined, response.statusCode) )
+            .on(&apos;204&apos;, (data, response) =&gt; callback(undefined, response.statusCode) )
+    }
+
+    /**
+     *
+     * @param {string} name - Procedure name to be called
+     * @param {Object[]} data - List of objects to be serialized
+     * @param {string[]} [fields] - list with de desired return fields. Empty list or None will return all
+     * @param {API~getCallback} callback - A callback to be performed after the response/error
+     */
+    callProcedure(name, data, fields=[], callback){
+        const path = &apos;procedure/&apos; + name;
+        const params = {
+            data: data,
+            async: false,
+            fields: fields,
+            API_KEY: this._key
+        };
+        
+        rest.postJson(this._formatURL(path), params)
+            .on(&apos;success&apos;, (data, response) =&gt; callback(data))
+            .on(&apos;fail&apos;, (data, response) =&gt; callback(undefined, response.statusCode))
+            .on(&apos;error&apos;, (error, response) =&gt; callback(response, error));
+
+    }
+    /**
+     *
+     * @param {Object} params
+     * @param {string[]} [fields]
+     * @return {Object}
+     * @private
+     */
+    _parsePayload(params, fields){
+        const payload = { API_KEY: this._key, FORMAT: &apos;JSON&apos;};
+        if (typeof fields !== &apos;undefined&apos;)
+            payload.FIELDS = fields.join();
+
+        return Object.assign(params, payload)
+    }
+
+    /**
+     *
+     * @param path
+     * @param {Object} [options] - Object with aditional params to be passed to url.format
+     * @returns {*}
+     * @private
+     */
+    _formatURL(path, options){
+        const baseURL = {
+            protocol: this._protocol,
+            host: this.server.host,
+            pathname: this.server.path + &apos;/&apos; + path
+        };
+        if (typeof options !== &apos;undefined&apos;)
+            Object.assign(baseURL, options);
+
+        return url.format(baseURL);
+    }
+}
+
+Unirio.API = API;</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.7)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

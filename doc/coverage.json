@@ -1,0 +1,17 @@
+{
+  "coverage": "63.63%",
+  "expectCount": 11,
+  "actualCount": 7,
+  "files": {
+    "src/api.es6": {
+      "expectCount": 11,
+      "actualCount": 7,
+      "undocumentLines": [
+        31,
+        12,
+        10,
+        40
+      ]
+    }
+  }
+}

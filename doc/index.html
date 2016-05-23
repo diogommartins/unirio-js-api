@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl">
+  <title data-ice="title">API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/diogommartins/unirio-js-api" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/api.es6~API.html">API</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-APIServers">APIServers</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Unirio">Unirio</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-API~ResultObject">API~ResultObject</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="unirio-api">unirio-api</h1>
+<p><a href="https://nodei.co/npm/unirio-api/"><img src="https://nodei.co/npm/unirio-api.png" alt="NPM"></a></p>
+<p>NPM package that provides an api client for the API provided by the Universidade Federal do Estado do Rio de Janeiro (UNIRIO)
+Please visit <a href="http://sistemas.unirio.br/api">http://sistemas.unirio.br/api</a> for further information.</p>
+<h2 id="installing">Installing</h2>
+<pre><code><code class="source-code prettyprint">npm install unirio-api</code>
+</code></pre><h2 id="testing">Testing</h2>
+<pre><code><code class="source-code prettyprint">npm test</code>
+</code></pre><h2 id="basic-usage">Basic Usage</h2>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">var Unirio = require(&apos;unirio-api&apos;);
+
+var KEY = &quot;1a404993f3175002c90738a4e46b1d12c06ddcc42f01ffbbaecf3285b98f34dc3ac0b9db9e07fdfbe0587c6ef14e5c92&quot;;
+
+var api = new Unirio.API(KEY, Unirio.APIServers.PRODUCTION);
+
+api.get(&apos;UNIT_TEST&apos;, undefined, undefined, function(data, error){
+    if (typeof error === &apos;undefined&apos;){
+        // Do something with `data`
+    }
+});</code>
+</code></pre>
+<h2 id="methods">Methods</h2>
+<p>The public module interface for interacting with the API methods is as follows:</p>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">get(path, params={}, fields=[], callback)</code>
+</code></pre>
+<ul>
+<li>@param {string} path - The API endpoint to use for the request, for example &apos;ALUNOS&apos;</li>
+<li>@param {Object} [params] - The parameters for the request. A value of None sends the automatic API parameters</li>
+<li>@param {string[]} [fields] - The return fields for the request. A value of None is equal do requesting ALL the fields</li>
+<li>@param {API~getCallback} callback - A callback to be performed after the response/error</li>
+</ul>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">post(path, params={}, callback)</code>
+</code></pre>
+<ul>
+<li>@param {string} path: The API endpoint to use for the request, for example &apos;ALUNOS&apos;</li>
+<li>@param {Object} params: The parameters for the request. Should contain all the not-null attributes.</li>
+<li>@param {API~postCallback} callback - A callback to be performed after the response/error</li>
+</ul>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">put(path, params, callback)</code>
+</code></pre>
+<ul>
+<li>@param {string} path - The API endpoint to use for the request, for example &apos;ALUNOS&apos;</li>
+<li>@param {Object} params - The parameters for the request. Should contain all the attributes that should be updated as well as the endpoint unique identifier.</li>
+<li>@param {API~changeCallback} callback</li>
+</ul>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">del(path, params, callback)</code>
+</code></pre>
+<ul>
+<li>@param {string} path - The API endpoint to use for the request, for example &apos;ALUNOS&apos;</li>
+<li>@param {Object} params - The parameters for the request. Should contain the endpoint unique identifier. e.g.: <code>{&apos;ID_ALUNO&apos;: 235}</code></li>
+<li>@param {API~changeCallback} callback</li>
+</ul>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">callProcedure(name, data, fields=[], callback)</code>
+</code></pre>
+<ul>
+<li>@param {string} name - Procedure name to be called</li>
+<li>@param {Object[]} data - Array of objects to be serialized</li>
+<li>@param {string[]} [fields] - Array with de desired return fields. Empty list or None will return all</li>
+<li>@param {API~getCallback} callback - A callback to be performed after the response/error</li>
+</ul>
+<h2 id="to-do">To do</h2>
+<ul>
+<li>Improve test coverage</li>
+<li>Implement caching integration</li>
+<li>Callbacks documentation</li>
+</ul>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.7)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
