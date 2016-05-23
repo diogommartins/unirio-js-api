@@ -1,6 +1,6 @@
 import {TEST_ENV} from './config';
 
-var request = require('request');
+var rest = require('restler');
 var url = require("url");
 
 var baseTestingURL = url.format({
@@ -10,7 +10,7 @@ var baseTestingURL = url.format({
 
 describe(`Checking if hostname "${baseTestingURL}" is up`, function(){
     it("returns status code 200", function(done){
-        request.get(baseTestingURL, function(error, response, body){
+        rest.get(baseTestingURL).on('success', function(data, response){
             expect(response.statusCode).toBe(200);
             done();
         })
