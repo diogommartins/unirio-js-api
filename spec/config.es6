@@ -10,6 +10,6 @@ export const KEYS = {
 };
 
 export const VALID_ENDPOINT = "UNIT_TEST";
-export const TEST_ENV = Unirio.APIServers.LOCAL;
+export const TEST_ENV = Unirio.APIServers.PRODUCTION;
 export const UNAUTHORIZED_PROCEDURE = 'FooProcedure';
 export const UNAUTHORIZED_ENDPOINT = 'ALUNOS';

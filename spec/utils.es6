@@ -6,4 +6,4 @@ export function randomString(length){
     return Math.random().toString(length).slice(2);
 }
 
-export const api = new Unirio.API(consts.KEYS.VALID.DEVELOPMENT, consts.TEST_ENV);
+export const api = new Unirio.API(consts.KEYS.VALID.PRODUCTION, consts.TEST_ENV);
