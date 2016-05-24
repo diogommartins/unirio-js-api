@@ -6,6 +6,7 @@ describe("Testing DELETE requests", function(){
 
     it("returns status code OK with permission", function(done){
         api.get(consts.VALID_ENDPOINT, undefined, undefined, function(data, error){
+            expect(data).toBeDefined();
             expect(data.content.length).toBeGreaterThan(0);
             expect(error).toBeUndefined();
 
